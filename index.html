@@ -47,7 +47,7 @@
           var auto = document.getElementById('autocomplete');
           var controller;
 
-          auto.addEventListener('keyup', function(event) {
+          auto.addEventListener('keydown', function(event) {
             
             if (controller) {
               controller.abort();
