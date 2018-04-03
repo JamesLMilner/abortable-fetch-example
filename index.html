@@ -41,6 +41,8 @@
 
           var redundantRequests = 0;
           var successfulRequests = 0;
+
+          var fakeApi = "http://localhost:3000/posts";
           
           var auto = document.getElementById('autocomplete');
           var controller;
@@ -54,7 +56,7 @@
                 controller = new AbortController();
                 var signal = controller.signal;
             }
-            var fakeApi = "http://localhost:3000/posts";
+            
 
             fetch(fakeApi, {signal})
               .then(function(response) {
@@ -68,9 +70,14 @@
               
               })
               .catch(function(e) {
-                redundantRequests++;
-                document.getElementById("redundant").textContent = redundantRequests + " uneccessary requests cancelled";
-                document.getElementById("error").textContent = "Cancelled request for " + event.target.value;
+
+                // Discount for NetworkErrors etc
+                if (e.name === "AbortError") {
+                  redundantRequests++;
+                  document.getElementById("redundant").textContent = redundantRequests + " uneccessary requests cancelled";
+                  document.getElementById("error").textContent = "Cancelled request for " + event.target.value;
+                }
+                
               })
           });
           
