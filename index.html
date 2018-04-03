@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <style>
+      h1, h3 {
+        text-align: center;
+      }
+      * {
+        font-family: sans-serif;
+      }
+      main {
+        width: 50vw;
+        margin: auto;
+      }
+      div {
+        margin: 10px;
+      }
+      #autocomplete {
+        margin: auto;
+        display: block;
+        width: 90%;
+      }
+      #successful {
+        background: #d8fbd8;
+      }
+      #redundant {
+        background: #f6c3c3;
+      }
+    </style>
+  </head>
+  <body>
+      <main>
+        <h1> Abortable Fetch Example </h1>
+        <h3> Type quickly to see request cancelled! </h3>
+        <input id="autocomplete">
+        <div id="autocompleteMenu"></div>
+        <div id="successful"></div>
+        <div id="redundant"></div>
+        <div id="error"></div>
+      </main>
+      <script>
+
+          var redundantRequests = 0;
+          var successfulRequests = 0;
+          
+          var auto = document.getElementById('autocomplete');
+          var controller;
+
+          auto.addEventListener('keyup', function(event) {
+            
+            if (controller) {
+              controller.abort();
+            }
+            if (AbortController) {
+                controller = new AbortController();
+                var signal = controller.signal;
+            }
+            var fakeApi = "http://localhost:3000/posts";
+
+            fetch(fakeApi, {signal})
+              .then(function(response) {
+                console.log("response", response);
+                response.json().then((data) => {
+                  successfulRequests++;
+                  document.getElementById("successful").textContent = successfulRequests + " requests have been successful";
+                  //document.getElementById("autocompleteMenu").textContent = data.value;
+                  //document.getElementById("error").textContent = "";
+                })
+              
+              })
+              .catch(function(e) {
+                redundantRequests++;
+                document.getElementById("redundant").textContent = redundantRequests + " uneccessary requests cancelled";
+                document.getElementById("error").textContent = "Cancelled request for " + event.target.value;
+              })
+          });
+          
+      </script>
+  </body>
+  
+</html>
